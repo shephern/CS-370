@@ -2,7 +2,7 @@
 import sys
 import pyhash
 import math
-import time
+import time as t
 ##############################
 ## Assignment 1- CS 370
 ## Nathan Shepherd
@@ -51,8 +51,6 @@ input_size = sum(1 for line in dictionary) + sum(1 for line in input_file)
 m1 = 7500000 #int(round(input_size*(3/math.log(2))))  
 m2 = 7500000 #int(round(input_size*(5/math.log(2))))
 
-print m1
-print m2
 #Run Dictionary through both of them
 bloom_filter1 = [0]*m1
 bloom_filter2 = [0]*m2
@@ -74,30 +72,49 @@ for bad_pass in dictionary:
                 bloom_filter2[bit3%m2] = bloom_filter2[bit4%m2] = \
                 bloom_filter2[bit5%m2] = 1
 
+#time_tot3 = 0
+#time_tot5 = 0
 #Run each potential password through both
 for test_password in input_file:
+        #time3 = time5 = t.time()
         bit1 = int(hash1(test_password))
         bit2 = int(hash2(test_password))
         bit3 = int(hash3(test_password))
+        #time3 = t.time() - time3
         bit4 = int(hash4(test_password))
         bit5 = int(hash5(test_password))
-
+        #time5 = t.time() - time5
+        
+        #time_check = t.time()
         in1 = bloom_filter1[bit1%m1] + bloom_filter1[bit2%m1] + \
                 bloom_filter1[bit3%m1]
+        
+        #Produce two files, for each bloom
+        if in1 == 3:
+                out1.write("maybe\n")
+        else:
+                out1.write("no\n")
+        
+        #time_check = t.time() - time_check
+        #time3 += time_check
+        #time_tot3 += time3
+        #time_check = t.time()
         in2 = bloom_filter2[bit1%m2] + bloom_filter2[bit2%m2] + \
                 bloom_filter2[bit3%m2] + bloom_filter2[bit4%m2] + \
                 bloom_filter2[bit5%m2]
-        
-        #Produce two files, for each bloom
-        if in1 == 0:
-                out1.write("no\n")
-        else:
-                out1.write("maybe\n")
-        if in2 == 0:
-                out2.write("no\n")
-        else:
+        if in2 == 5:
                 out2.write("maybe\n")
+        else:
+                out2.write("no\n")
+        #time_check = t.time() - time_check
+        #time5 += time_check
 
+        #time_tot5 += time5
+
+
+
+#print "Using 3 hash functions took:",time_tot3*1000,"msecs\n"
+#print "Using 5 hash functions took:",time_tot5*1000,"msecs\n"
 # Close all files
 input_file.close()
 dictionary.close()
