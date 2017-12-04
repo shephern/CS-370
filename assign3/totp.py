@@ -4,19 +4,21 @@ import time as t
 
 digit = 6
 time_inc = 5
-key = "abcdefghijklmnop"
+key = "abcd efgh ijkl mnop"
+key = key.upper()
+key = key.replace(" ", "") 
+
 print key
 counter = 0
 
-t0 = 0 #So the first one runs, then times to the second
 while 1==1:
-        if(t0 == 0 or (t0-t.time())% time_inc == 0):
+        if((t.time())% time_inc == 0):
                 # Every 30 seconds
-                t0 = t.time()
+                counter = int(t.time()/time_inc)
                 hash_new = hmac.new(key, str(counter), sha1)
                 s = hash_new.hexdigest()
                 #Find lower 4 bits of byte 19
-                index = int(s[39], 16)
+                index = int(s[39], 16) * 2
                 #Index to that byte to that byte + 3
                 string = s[index:index+8]
                 #Mask out highest bit
@@ -26,7 +28,7 @@ while 1==1:
 
                 #Modulo with 10^digit
                 totp = int(string, 2) % (10**digit)
-                print totp
+                print str(totp).zfill(6)
                 counter += 1
 
 
