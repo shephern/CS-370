@@ -1,9 +1,11 @@
 import hmac
 from hashlib import sha1
 import time as t
+import base64
+import struct
 
 digit = 6
-time_inc = 5
+time_inc = 30
 key = "abcd efgh ijkl mnop"
 key = key.upper()
 key = key.replace(" ", "") 
@@ -15,7 +17,8 @@ while 1==1:
         if((t.time())% time_inc == 0):
                 # Every 30 seconds
                 counter = int(t.time()/time_inc)
-                hash_new = hmac.new(key, str(counter), sha1)
+                counter = struct.pack('>Q', counter)  # Used from GitHub User acoster, https://gist.github.com/acoster/4121786
+                hash_new = hmac.new(base64.b32decode(key), str(counter), sha1)
                 s = hash_new.hexdigest()
                 #Find lower 4 bits of byte 19
                 index = int(s[39], 16) * 2
@@ -29,7 +32,6 @@ while 1==1:
                 #Modulo with 10^digit
                 totp = int(string, 2) % (10**digit)
                 print str(totp).zfill(6)
-                counter += 1
 
 
 
